@@ -1,0 +1,4 @@
+void	*freememory(void *ptr)
+		free(ptr);
+	freememory(line);
+		freememory(*line);
