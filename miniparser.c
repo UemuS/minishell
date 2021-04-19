@@ -113,6 +113,8 @@ void	type_arg(t_token *token, int separator)
 		token->type = PIPE;
 	else if (ft_strcmp(token->str, ";") == 0 && separator == 0)
 		token->type = END;
+	else if (token->prev && token->prev->type >= TRUNC && token->prev->type <= INPUT)
+		token->type = ARG;
 	else if (token->prev == NULL || token->prev->type >= TRUNC)
 		token->type = CMD;
 	else
@@ -227,24 +229,43 @@ t_token	*split_tok(char *line)
 	return (next);
 }
 
+int		ifnotcmd(char *str)
+{
+	if (!ft_strcmp(str, "echo") || !ft_strcmp(str, "ls") ||
+		!ft_strcmp(str, "pwd") || !ft_strcmp(str, "unset") ||
+			!ft_strcmp(str, "wc") || !ft_strcmp(str, "env") ||
+			!ft_strcmp(str, "export") || !ft_strcmp(str, "cd"))
+		return(1);
+	return(0);
+}
 
 void	fill_tok(t_pars *pars, t_token *tok, char *line)
 {
 	pars->start = split_tok(line);
-	/* just printing */
-	
-	
 	while(pars->start)
 	{
-		printf("%s == ", pars->start->str);
-		printf("%d\n", pars->start->type);
+		printf("\033[0;34m\033[1mToken : \033[0;37m%-10s \033[0;34m\033[1m type :  \033[0m", pars->start->str);
+		printf("%-10d\n", pars->start->type);
 		if(pars->start->next)
 			pars->start = pars->start->next;
 		else
 			break;
 	}
-	printf("backward\n");
-	/*while(pars->start)
+	while (pars->start && pars->start->prev)
+		pars->start = pars->start->prev;
+	/*  COMMAND CHECK
+	
+	while(pars->start)
+	{
+		if (pars->start->type == 1 && !ifnotcmd(pars->start->str))
+			ft_putendl_fd("Wrong command", STDERR);
+		if(pars->start->next)
+			pars->start = pars->start->next;
+		else
+			break;
+	}	*/
+	/* FOR BACKWARD
+	while(pars->start)
 	{
 		printf("%s\n", pars->start->str);
 		if(pars->start->prev)
@@ -261,13 +282,51 @@ void	fill_tok(t_pars *pars, t_token *tok, char *line)
 	/* until here */
 }
 
+void	unexpectedtoken(char *str)
+{
+	char *ret;
+	ret = ft_strjoin("syntax error near unexpected token ", str);
+	ft_putendl_fd(ret, STDERR);
+	if(ret)
+		free(ret);
+}
+
+int		checksyntaxe(t_token *start)
+{
+	while(start)
+	{
+		if(!start->prev && start->type >= 6)
+		{		
+			unexpectedtoken(start->str);
+			return(1);
+		}
+		if(start->next && start->type >= 3 && start->next->type >= 3)
+		{
+			unexpectedtoken(start->str);
+			return(1);
+		}
+		else if (!start->next)
+		{
+			if(start->type >= 3 && start->type <= 6)
+			{
+				unexpectedtoken(start->str);
+				return(1);
+			}
+			else
+				break;
+		}
+		start = start->next;
+	}
+	return(0);
+}
+
 void    parse(t_pars *pars)
 {
     t_token *tok;
     char    *line;
 
     ft_putstr_fd("\033[0;35m\033[1mminishell\033[0;37m$ \033[0m", STDERR);
-    if (get_next_line(0, &line) < 0 && (pars->exit = 1))
+    if (get_next_line(0, &line) < 0)
 		ft_putendl_fd("exit", STDERR);
     if (check_forquotes(pars, &line))
 		return ;
@@ -276,4 +335,6 @@ void    parse(t_pars *pars)
 		line[0] = (char)(-122);
     printf("%s\n", line);
 	fill_tok(pars, tok, line);
+	if (checksyntaxe(pars->start))
+		return ;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: laafilal <afilal.lamiaa@gmail.com>         +#+  +:+       +#+        */
+/*   By: yihssan <yihssan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/23 00:22:53 by laafilal          #+#    #+#             */
-/*   Updated: 2019/11/20 11:16:43 by laafilal         ###   ########.fr       */
+/*   Updated: 2021/04/19 08:51:53 by yihssan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 			str[l] = s2[i++];
 		l++;
 	}
-	str[l] = "\0";
+	str[l] = '\0';
 	return (str);
 }
