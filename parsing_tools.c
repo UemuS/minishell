@@ -33,7 +33,7 @@ int		quotes(char *line, int index)
 	open = 0;
 	while (line[i] && i != index)
 	{
-		if (i > 0 && line[i - 1] == '\\')
+		if (i > 0 && line[i - 1] == '\\' && open != 2)
 			;
 		else if (open == 0 && line[i] == '\"')
 			open = 1;

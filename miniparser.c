@@ -153,6 +153,14 @@ int		alloc_str(char *line, int *i)
 	return (j - count + 1);
 }
 
+int		dblquotes(char c)
+{
+	if (c == '\'' || c == '$')
+		return(1);
+	else
+		return(0);
+}
+
 t_token	*next_token(char *line, int *i)
 {
 	t_token	*token;
@@ -176,10 +184,11 @@ t_token	*next_token(char *line, int *i)
 			c = ' ';
 			(*i)++;
 		}
-		else if (line[*i] == '\\' && quotes(line, *i) == 0)
+		else if (line[*i] == '\\')
 		{
 			/* Single and double quotes checker should be added here*/
-			i++;
+			if (quotes(line, *i) != 2 && (quotes(line, *i) != 1 || (line[(*i) + 1] && dblquotes(line[(*i) + 1]))))
+				(*i)++;
 			token->str[j++] = line[(*i)++];
 		}
 		else
