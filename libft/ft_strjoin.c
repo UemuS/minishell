@@ -3,38 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yihssan <yihssan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rchallie <rchallie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/23 00:22:53 by laafilal          #+#    #+#             */
-/*   Updated: 2021/04/19 08:51:53 by yihssan          ###   ########.fr       */
+/*   Created: 2019/10/10 14:41:14 by rchallie          #+#    #+#             */
+/*   Updated: 2019/10/23 10:30:37 by rchallie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char		*ft_strjoin(char const *s1, char const *s2)
 {
-	char	*str;
-	size_t	l;
-	size_t	i;
-	size_t	som;
+	size_t	s1_len;
+	size_t	s2_len;
+	size_t	stot_len;
+	char	*rtn;
 
-	l = 0;
-	i = 0;
-	if (!s1 || !s2)
-		return (NULL);
-	som = (ft_strlen(s1) + 1 + 1);
-	str = malloc(som);
-	if (!str)
-		return (NULL);
-	while (l < som - 1)
-	{
-		if (l < ft_strlen(s1))
-			str[l] = s1[l];
-		else
-			str[l] = s2[i++];
-		l++;
-	}
-	str[l] = '\0';
-	return (str);
+	if (!s1 && !s2)
+		return (ft_strdup(""));
+	if (s1 && !s2)
+		return (ft_strdup(s1));
+	if (!s1 && s2)
+		return (ft_strdup(s2));
+	s1_len = ft_strlen((char *)s1);
+	s2_len = ft_strlen(s2);
+	stot_len = s1_len + s2_len + 1;
+	rtn = malloc(sizeof(char) * stot_len);
+	if (!rtn)
+		return (0);
+	ft_memmove(rtn, s1, s1_len);
+	ft_memmove(rtn + s1_len, s2, s2_len);
+	rtn[stot_len - 1] = '\0';
+	return (rtn);
 }

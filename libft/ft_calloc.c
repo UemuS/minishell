@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_calloc.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: laafilal <afilal.lamiaa@gmail.com>         +#+  +:+       +#+        */
+/*   By: rchallie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/17 15:00:20 by laafilal          #+#    #+#             */
-/*   Updated: 2019/12/01 21:46:51 by laafilal         ###   ########.fr       */
+/*   Created: 2019/10/10 13:33:10 by rchallie          #+#    #+#             */
+/*   Updated: 2019/10/14 16:02:45 by rchallie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 void	*ft_calloc(size_t count, size_t size)
 {
-	void	*str;
+	void	*rtn;
 
-	str = malloc(count * size);
-	if (!str)
+	rtn = malloc(size * count);
+	if (!rtn)
 		return (NULL);
-	return (ft_memset(str, 0, count * size));
+	ft_bzero(rtn, count);
+	return (rtn);
 }

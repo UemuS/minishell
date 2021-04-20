@@ -1,7 +1,6 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include "libft/libft.h"
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
@@ -28,7 +27,8 @@
 # define INPUT 5
 # define PIPE 6
 # define END 7
-# define ISCMD(x) x == "echo" || x == "ls" || x == "wc" || x == "pwd" || x == "export" || x == "unset" || x == "env" || x == "exit"
+# define FLAG 8
+# define BADCMD 9
 
 typedef struct	s_token
 {

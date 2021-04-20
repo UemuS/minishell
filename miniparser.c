@@ -151,6 +151,11 @@ int		alloc_str(char *line, int *i)
 			j++;
 		if (line[*i + j - 1] == '\\')
 			count--;
+		if (line[*i + j - 1] == '\\' && line[*i +j] == ' ')
+		{
+			j++;
+			count++;
+		}
 	}
 	return (j - count + 1);
 }
@@ -229,57 +234,26 @@ t_token	*split_tok(char *line)
 	return (next);
 }
 
-int		ifnotcmd(char *str)
+void		resetlst(t_pars *pars)
+{
+	while (pars->start && pars->start->prev)
+		pars->start = pars->start->prev;
+}
+
+
+int		isnotcmd(char *str)
 {
 	if (!ft_strcmp(str, "echo") || !ft_strcmp(str, "ls") ||
 		!ft_strcmp(str, "pwd") || !ft_strcmp(str, "unset") ||
 			!ft_strcmp(str, "wc") || !ft_strcmp(str, "env") ||
 			!ft_strcmp(str, "export") || !ft_strcmp(str, "cd"))
-		return(1);
-	return(0);
+		return(0);
+	return(1);
 }
 
 void	fill_tok(t_pars *pars, t_token *tok, char *line)
 {
 	pars->start = split_tok(line);
-	while(pars->start)
-	{
-		printf("\033[0;34m\033[1mToken : \033[0;37m%-10s \033[0;34m\033[1m type :  \033[0m", pars->start->str);
-		printf("%-10d\n", pars->start->type);
-		if(pars->start->next)
-			pars->start = pars->start->next;
-		else
-			break;
-	}
-	while (pars->start && pars->start->prev)
-		pars->start = pars->start->prev;
-	/*  COMMAND CHECK
-	
-	while(pars->start)
-	{
-		if (pars->start->type == 1 && !ifnotcmd(pars->start->str))
-			ft_putendl_fd("Wrong command", STDERR);
-		if(pars->start->next)
-			pars->start = pars->start->next;
-		else
-			break;
-	}	*/
-	/* FOR BACKWARD
-	while(pars->start)
-	{
-		printf("%s\n", pars->start->str);
-		if(pars->start->prev)
-			pars->start = pars->start->prev;
-		else
-			break;
-	}*/
-	if (line)
-	{
-		free(line);
-		line = NULL;
-	}
-
-	/* until here */
 }
 
 void	unexpectedtoken(char *str)
@@ -320,13 +294,82 @@ int		checksyntaxe(t_token *start)
 	return(0);
 }
 
+int		echoflag(t_token *flag)
+{
+	char	*str;
+	int		i;
+	if(!ft_strcmp(flag->str,"echo")  && flag->next && flag->next->type == 2)
+	{
+		str = flag->next->str;
+		if(!ft_strncmp(str,"-n", 2))
+		{
+			i = 1;
+			while(str[++i])
+			{
+				if (str[i] != 'n')
+					return(0);
+			}
+			return(1);
+		}
+	}
+	return(0);
+}
+
+void	removecmd(t_token *start)
+{
+	while (start)
+	{
+		if (start->type == 1 && isnotcmd(start->str))
+		{
+			start->type = 9;
+			while(start->next && start->next->type <= 5)
+			{
+				if (start->next->next)
+				{
+					start->next = start->next->next;
+					start->next->prev = start; 
+				}
+				else
+					start->next = NULL;
+			}
+		}
+		else if(echoflag(start))
+			start->next->type = 8;
+		start = start->next;
+	}
+}
+
+void	printtokens(t_pars *pars)
+{
+	while(pars->start)
+	{
+		printf("\033[0;34m\033[1mToken : \033[0;37m%s| \033[0;34m\033[1m type :  \033[0m", pars->start->str);
+		printf("%-10d\n", pars->start->type);
+		if(pars->start->next)
+			pars->start = pars->start->next;
+		else
+			break;
+	}
+	/* FOR BACKWARD
+	while(pars->start)
+	{
+		printf("%s\n", pars->start->str);
+		if(pars->start->prev)
+			pars->start = pars->start->prev;
+		else
+			break;
+	}*/
+
+	/* until here */
+}
+
 void    parse(t_pars *pars)
 {
     t_token *tok;
     char    *line;
 
-    ft_putstr_fd("\033[0;35m\033[1mminishell\033[0;37m$ \033[0m", STDERR);
-    if (get_next_line(0, &line) < 0)
+   ft_putstr_fd("\033[0;35m\033[1mminishell\033[0;37m$ \033[0m", STDERR);
+    if (get_next_line(0, &line) < 0 && (pars->exit = 1))
 		ft_putendl_fd("exit", STDERR);
     if (check_forquotes(pars, &line))
 		return ;
@@ -337,4 +380,7 @@ void    parse(t_pars *pars)
 	fill_tok(pars, tok, line);
 	if (checksyntaxe(pars->start))
 		return ;
+	resetlst(pars);
+	removecmd(pars->start);
+	printtokens(pars);
 }

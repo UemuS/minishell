@@ -3,39 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: laafilal <afilal.lamiaa@gmail.com>         +#+  +:+       +#+        */
+/*   By: rchallie <rchallie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/16 22:28:27 by laafilal          #+#    #+#             */
-/*   Updated: 2020/12/28 15:48:56 by laafilal         ###   ########.fr       */
+/*   Created: 2019/10/07 15:54:34 by rchallie          #+#    #+#             */
+/*   Updated: 2019/10/16 17:50:37 by rchallie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include <stdio.h>
 
-int		ft_atoi(const char *str)
+int	ft_atoi(const char *str)
 {
-	size_t	l;
-	long	res;
-	int		sign;
+	long	i;
+	long	nbr;
+	int		isneg;
 
-	l = 0;
-	res = 0;
-	sign = 1;
-	while (str[l] != '\0' && ((str[l] >= 9 && str[l] <= 13) || str[l] == 32))
-		l++;
-	if (str[l] == '-')
-		sign = -1;
-	if (str[l] == '-' || str[l] == '+')
-		l++;
-	while (str[l] != '\0' && str[l] >= 48 && str[l] <= 57)
+	i = 0;
+	nbr = 0;
+	isneg = 0;
+	while (str[i] != '\0' && (str[i] == 32 || str[i] == '\t' || str[i] == '\n'
+			|| str[i] == '\r' || str[i] == '\v' || str[i] == '\f'))
+		i++;
+	if (str[i] != '\0' && str[i] == '-')
 	{
-		if (res * 10 + str[l] - '0' < res)
-		{
-			res = (sign == -1 ? 0 : -1);
-			break ;
-		}
-		res = res * 10 + str[l++] - '0';
+		isneg = 1;
+		i++;
 	}
-	return (res * sign);
+	else if (str[i] == '+')
+		i++;
+	while (str[i] != '\0' && ft_isdigit(str[i]))
+		nbr = (nbr * 10) + (str[i++] - '0');
+	if (isneg == 1)
+		return (-nbr);
+	return (nbr);
 }

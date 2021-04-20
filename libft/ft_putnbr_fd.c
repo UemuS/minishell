@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: laafilal <afilal.lamiaa@gmail.com>         +#+  +:+       +#+        */
+/*   By: rchallie <rchallie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/31 20:33:07 by laafilal          #+#    #+#             */
-/*   Updated: 2019/11/20 11:26:29 by laafilal         ###   ########.fr       */
+/*   Created: 2019/10/07 13:56:11 by rchallie          #+#    #+#             */
+/*   Updated: 2019/10/21 16:18:38 by rchallie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,28 @@
 
 void	ft_putnbr_fd(int n, int fd)
 {
-	long	nb;
-	char	str[ft_nbrcount(n)];
-	size_t	i;
+	char c;
 
-	i = ft_nbrcount(n);
-	nb = n;
-	if (nb < 0)
+	if (n == -2147483648)
+		write(fd, "-2147483648", 11);
+	else
 	{
-		nb = nb * -1;
-		str[0] = '-';
+		if (n < 0)
+		{
+			write(fd, "-", 1);
+			n = -n;
+			ft_putnbr_fd(n, fd);
+		}
+		else if (n < 10)
+		{
+			c = n + '0';
+			write(fd, &c, 1);
+		}
+		else
+		{
+			ft_putnbr_fd(n / 10, fd);
+			c = (n % 10) + '0';
+			write(fd, &c, 1);
+		}
 	}
-	str[i] = '\0';
-	i--;
-	while (nb >= 10)
-	{
-		str[i] = (nb % 10) + '0';
-		nb = nb / 10;
-		i--;
-	}
-	if (nb >= 0 && nb < 10)
-		str[i] = nb + '0';
-	ft_putstr_fd(str, fd);
 }

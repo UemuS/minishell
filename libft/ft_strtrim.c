@@ -3,61 +3,46 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: laafilal <afilal.lamiaa@gmail.com>         +#+  +:+       +#+        */
+/*   By: rchallie <rchallie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/23 01:47:16 by laafilal          #+#    #+#             */
-/*   Updated: 2020/12/28 17:09:30 by laafilal         ###   ########.fr       */
+/*   Created: 2019/10/10 14:54:46 by rchallie          #+#    #+#             */
+/*   Updated: 2019/10/23 10:40:53 by rchallie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static size_t		ft_trim_front(const char *str, char const *set)
+static int		is_in_set(char c, const char *set)
 {
-	size_t		i;
-	size_t		c;
-
-	i = 0;
-	c = 0;
-	while (str[i] != '\0')
-	{
-		if (!ft_strchr(set, str[i++]))
-			return (c);
-		c++;
-	}
-	return (c);
+	while (*set)
+		if (c == *set++)
+			return (0);
+	return (1);
 }
 
-static size_t		ft_trim_back(const char *str, char const *set)
+char			*ft_strtrim(char const *s1, char const *set)
 {
-	size_t		i;
-	size_t		c;
-
-	i = ft_strlen(str) - 1;
-	c = 0;
-	while (i + 1 > 0 && str[i] != '\0')
-	{
-		if (!ft_strchr(set, str[i--]))
-			return (c);
-		c++;
-	}
-	return (i);
-}
-
-char				*ft_strtrim(char const *s1, char const *set)
-{
-	char		*str;
-	size_t		ctf;
-	size_t		ctb;
+	size_t	start;
+	size_t	end;
+	char	*rtn;
 
 	if (!s1)
 		return (NULL);
-	if (!set || *s1 == 0 || *set == 0)
+	if (!set)
 		return (ft_strdup(s1));
-	ctf = ft_trim_front(s1, set);
-	ctb = ft_strlen(s1) - (ft_trim_front(s1, set) + ft_trim_back(s1, set));
-	str = ft_substr(s1, ctf, ctb);
-	if (!str)
-		return (NULL);
-	return (str);
+	start = 0;
+	end = ft_strlen(s1);
+	while (is_in_set(s1[start], set) == 0)
+		start++;
+	if (start == ft_strlen(s1))
+	{
+		if (!(rtn = ft_strdup("")))
+			return (NULL);
+		else
+			return (rtn);
+	}
+	while (is_in_set(s1[end - 1], set) == 0)
+		end--;
+	rtn = ft_substr(s1, start, end - start);
+	return (rtn);
 }
