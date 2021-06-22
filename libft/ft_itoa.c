@@ -3,75 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rchallie <rchallie@student.42.fr>          +#+  +:+       +#+        */
+/*   By: laafilal <afilal.lamiaa@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/10 15:29:57 by rchallie          #+#    #+#             */
-/*   Updated: 2019/10/23 10:55:12 by rchallie         ###   ########.fr       */
+/*   Created: 2019/10/30 14:36:51 by laafilal          #+#    #+#             */
+/*   Updated: 2019/10/31 21:22:31 by laafilal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int		ft_estim(long n)
+char	*ft_itoa(int n)
 {
-	size_t	estim;
-	int		isneg;
+	char	*str;
+	int		i;
+	long	nb;
 
-	estim = 0;
-	isneg = 0;
-	if (n < 0)
+	nb = n;
+	i = ft_nbrcount(nb);
+	str = malloc(sizeof(char) * (i + 1));
+	if (!str)
+		return (NULL);
+	str[i] = '\0';
+	i--;
+	if (nb < 0)
 	{
-		estim++;
-		isneg++;
-		n = -n;
+		nb = nb * -1;
+		str[0] = '-';
 	}
-	while (n >= 1)
+	while (nb >= 10)
 	{
-		estim++;
-		n /= 10;
+		str[i] = (nb % 10) + '0';
+		nb = nb / 10;
+		i--;
 	}
-	return (estim);
-}
-
-static char		*ft_gen(char *rtn, long nbr, int len, int isneg)
-{
-	if (nbr != 0)
-		rtn = malloc(sizeof(char) * (len + 1));
-	else
-		return (rtn = ft_strdup("0"));
-	if (!rtn)
-		return (0);
-	isneg = 0;
-	if (nbr < 0)
-	{
-		isneg++;
-		nbr = -nbr;
-	}
-	rtn[len] = '\0';
-	while (--len)
-	{
-		rtn[len] = (nbr % 10) + '0';
-		nbr /= 10;
-	}
-	if (isneg == 1)
-		rtn[0] = '-';
-	else
-		rtn[0] = (nbr % 10) + '0';
-	return (rtn);
-}
-
-char			*ft_itoa(int n)
-{
-	int		len;
-	char	*rtn;
-	long	nbr;
-	int		isneg;
-
-	nbr = n;
-	len = ft_estim(nbr);
-	rtn = 0;
-	isneg = 0;
-	if (!(rtn = ft_gen(rtn, nbr, len, isneg)))
-		return (0);
-	return (rtn);
+	if (nb >= 0 && nb < 10)
+		str[i] = nb + '0';
+	return (str);
 }
